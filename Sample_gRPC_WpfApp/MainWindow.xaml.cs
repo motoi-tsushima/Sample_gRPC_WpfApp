@@ -25,16 +25,56 @@ namespace Sample_gRPC_WpfApp
         public MainWindow()
         {
             InitializeComponent();
+
+            this.grpcClient = new SampleClient();
         }
+
+        private SampleClient grpcClient = null;
 
         private void ReqestButton_Click(object sender, RoutedEventArgs e)
         {
             string requestText = this.ReqestTextBox.Text;
 
-            SampleClient grpcClient = new SampleClient();
-            var reply = grpcClient.GreeterClient.SayHello(new HelloRequest { Name = requestText });
+            var reply = this.grpcClient.GreeterClient.SayHello(new HelloRequest { Name = requestText });
 
             this.ReplayTextBox.Text = reply.Message;
+        }
+
+        private void MyFunctionButton_Click(object sender, RoutedEventArgs e)
+        {
+            string requestText = this.MyFunctionTextBox.Text;
+            string requestInt = this.MyFunctionIntBox.Text;
+            Int32 intValue;
+            Int32.TryParse(requestInt, out intValue);
+
+            MyRequest myRequest = new MyRequest();
+            myRequest.Parameter1 = requestText;
+            myRequest.ParameterIntValue = intValue;
+
+            var reply = this.grpcClient.GreeterClient.MyFunction(myRequest);
+
+            this.ReplayMyFunctionTextBox.Text = reply.Message;
+        }
+
+        private void CalcButton_Click(object sender, RoutedEventArgs e)
+        {
+            string value1 = this.Int1TextBox.Text;
+            string value2 = this.Int2TextBox.Text;
+            Int32 intValue1;
+            Int32 intValue2;
+
+            Int32.TryParse(value1, out intValue1);
+            Int32.TryParse(value2, out intValue2);
+
+            var reply = this.grpcClient.GreeterClient.Calc(
+                new CalcParameter { Parameter1 = intValue1, Parameter2 = intValue2 }
+                );
+
+            this.AdditionTextBox.Text = reply.Addition.ToString();
+            this.SubtractionTextBox.Text = reply.Subtraction.ToString();
+            this.MultiplicationTextBox.Text = reply.Multiplication.ToString();
+            this.DivisionTextBox.Text = reply.Division.ToString();
+
         }
     }
 }

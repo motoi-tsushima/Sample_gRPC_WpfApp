@@ -5,20 +5,53 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sample_gRPC_WpfApp"
         mc:Ignorable="d"
-        Title="Sample gRPC-WPF" Height="100" Width="500">
+        Title="Sample gRPC-WPF" Height="200" Width="620">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <TextBlock Text="リクエスト文字列" Width="100" Margin="20,0,0,0" />
+        <StackPanel Orientation="Horizontal" Grid.Row="0" >
+            <TextBlock Text="リクエスト文字列" Width="100" />
             <TextBox x:Name="ReqestTextBox" Width="200" />
             <Button x:Name="ReqestButton" Content="リクエスト" Width="100" Click="ReqestButton_Click"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Height="20" VerticalAlignment="Top">
-            <TextBlock Text="リプライ" Width="100" Margin="20,0,0,0" />
-            <TextBox x:Name="ReplayTextBox" Width="300" />
+            <TextBlock Text="リプライ" Width="100" />
+            <TextBox x:Name="ReplayTextBox" Width="200" />
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Height="20" VerticalAlignment="Top" Margin="0,10,0,0">
+            <TextBlock Text="MyFunction文字列" Width="100" TextAlignment="Right" />
+            <TextBox x:Name="MyFunctionTextBox" Width="200" />
+            <TextBlock Text="MyFunction整数" Width="100" TextAlignment="Right" />
+            <TextBox x:Name="MyFunctionIntBox" Width="50" TextAlignment="Right"/>
+            <Button x:Name="MyFunctionButton" Content="リクエスト" Width="100" Click="MyFunctionButton_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Height="20" VerticalAlignment="Top">
+            <TextBlock Text="リプライ" Width="100" />
+            <TextBox x:Name="ReplayMyFunctionTextBox" Width="200" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="0,10,0,0">
+            <TextBlock Text="整数1" Width="100" TextAlignment="Right"/>
+            <TextBox x:Name="Int1TextBox" Width="50" TextAlignment="Right" />
+            <TextBlock Text="整数2" Width="100" TextAlignment="Right"/>
+            <TextBox x:Name="Int2TextBox" Width="50" TextAlignment="Right" />
+            <Button x:Name="CalcButton" Content="計算" Width="100" Margin="30,0,0,0" Click="CalcButton_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Height="20" VerticalAlignment="Top">
+            <TextBlock Text="加算" Width="100" TextAlignment="Right" />
+            <TextBox x:Name="AdditionTextBox" Width="50" TextAlignment="Right"/>
+            <TextBlock Text="減算" Width="100" TextAlignment="Right"/>
+            <TextBox x:Name="SubtractionTextBox" Width="50"  TextAlignment="Right" />
+            <TextBlock Text="掛算" Width="100"  TextAlignment="Right"/>
+            <TextBox x:Name="MultiplicationTextBox" Width="50" TextAlignment="Right" />
+            <TextBlock Text="割算" Width="100"  TextAlignment="Right"/>
+            <TextBox x:Name="DivisionTextBox" Width="50"  TextAlignment="Right"/>
+        </StackPanel>
+
     </Grid>
 </Window>
