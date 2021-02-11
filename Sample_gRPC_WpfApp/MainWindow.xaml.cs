@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Grpc.Net.Client;
+using Google.Protobuf.WellKnownTypes;
 using Sample_gRPC_ClassLibrary;
 
 namespace Sample_gRPC_WpfApp
@@ -107,7 +108,9 @@ namespace Sample_gRPC_WpfApp
 
             int hour, minute, span;
             if(int.TryParse(this.xHourTextBox.Text, out hour) == false) return;
+            if (hour > 24) return;
             if (int.TryParse(this.xMinuteTextBox.Text, out minute) == false) return;
+            if (minute > 60) return;
             if (int.TryParse(this.xSpanTextBox.Text, out span) == false) return;
 
             DateTime dateTime = this.xDatePicker.SelectedDate.Value;
@@ -123,11 +126,17 @@ namespace Sample_gRPC_WpfApp
             reservationTime.Subject = "診察予約";
             reservationTime.Time = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTimeOffset(dateTimeOffset);
             reservationTime.Duration = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(duration);
-            reservationTime.TimeZone = timeZoneText;
+            reservationTime.TimeZone = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(timeZone);
 
+            // gRPC サービスを呼び出す。
             var reply = this.grpcClient.GreeterClient.Reserve(reservationTime);
 
-            this.xReserveTextBox.Text = reply.Time.ToDateTime().ToString() + " / " + reply.TimeZone.ToString();
+            // 日付をクライアント側のタイムゾーンに変換する。
+            DateTimeOffset replyDateTime = reply.Time.ToDateTimeOffset().ToOffset(timeZone);
+            DateTimeOffset replyDateTimeOffset = new DateTimeOffset(replyDateTime.DateTime, timeZone);
+
+            // 予約日を表示する。
+            this.xReserveTextBox.Text = replyDateTimeOffset.ToString("yyyy年MM月dd日 H時m分s秒") + " / " + reply.Duration.ToTimeSpan().ToString() + " / " + reply.TimeZone.ToTimeSpan().ToString(); ;
 
         }
     }

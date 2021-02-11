@@ -69,7 +69,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="7" Height="25" VerticalAlignment="Top">
             <TextBlock Text="予約候補日時" Width="100" TextAlignment="Left" />
-            <TextBox x:Name="xReserveTextBox" Width="120" TextAlignment="Left"/>
+            <TextBox x:Name="xReserveTextBox" Width="450" TextAlignment="Left"/>
         </StackPanel>
 
     </Grid>
