@@ -4,14 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sample_gRPC_WpfApp"
+        xmlns:vm="clr-namespace:Sample_gRPC_WpfApp"
         mc:Ignorable="d"
-        Title="Sample gRPC-WPF" Height="200" Width="620">
+        Title="Sample gRPC-WPF" Height="500" Width="900">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
             <RowDefinition Height="20" />
             <RowDefinition Height="30" />
             <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -51,6 +54,22 @@
             <TextBox x:Name="MultiplicationTextBox" Width="50" TextAlignment="Right" />
             <TextBlock Text="割算" Width="100"  TextAlignment="Right"/>
             <TextBox x:Name="DivisionTextBox" Width="50"  TextAlignment="Right"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="6" Height="25" VerticalAlignment="Top">
+            <DatePicker x:Name="xDatePicker" Width="120" Height="25" />
+            <TextBox Margin="20,0,0,0" x:Name="xHourTextBox" Width="50" TextAlignment="Left"/>
+            <TextBlock Text="時刻(24時間制)" Width="100" TextAlignment="Left" />
+            <TextBox x:Name="xMinuteTextBox" Width="50" TextAlignment="Left"/>
+            <TextBlock Text="分" Width="30" TextAlignment="Left" />
+            <TextBox x:Name="xSpanTextBox" Width="50" TextAlignment="Left"/>
+            <TextBlock Text="時間(分)" Width="60" TextAlignment="Left" />
+            <TextBlock Text="タイムゾーン" Width="60" TextAlignment="Left" />
+            <ComboBox x:Name="xTimeSpanComboBox" ItemsSource="{Binding TimeZone}" Width="120" />
+            <Button x:Name="ReserveButton" Content="予約" Width="100" Margin="30,0,0,0" Click="ReserveButton_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="7" Height="25" VerticalAlignment="Top">
+            <TextBlock Text="予約候補日時" Width="100" TextAlignment="Left" />
+            <TextBox x:Name="xReserveTextBox" Width="120" TextAlignment="Left"/>
         </StackPanel>
 
     </Grid>

@@ -24,7 +24,11 @@ namespace Sample_gRPC_WpfApp
     {
         public MainWindow()
         {
+            InitTimeZone();
+
             InitializeComponent();
+
+            this.DataContext = this;
 
             this.grpcClient = new SampleClient();
         }
@@ -74,6 +78,56 @@ namespace Sample_gRPC_WpfApp
             this.SubtractionTextBox.Text = reply.Subtraction.ToString();
             this.MultiplicationTextBox.Text = reply.Multiplication.ToString();
             this.DivisionTextBox.Text = reply.Division.ToString();
+
+        }
+
+        private Dictionary<string, TimeSpan> _timeZone = null;
+        public Dictionary<string, TimeSpan> TimeZone { get { return this._timeZone; } }
+
+        private void InitTimeZone()
+        {
+            TimeSpan JapanTimeSpan = new TimeSpan(9, 0, 0);
+            TimeSpan BritainTimeSpan = new TimeSpan(0, 0, 0);
+            TimeSpan AmericaEasternTimeSpan = new TimeSpan(-4, 0, 0);
+
+            this._timeZone = new Dictionary<string, TimeSpan>();
+
+            this._timeZone.Add("Japan", JapanTimeSpan);
+            this._timeZone.Add("Britain", BritainTimeSpan);
+            this._timeZone.Add("AmericaEastern", AmericaEasternTimeSpan);
+        }
+
+        private void ReserveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.xDatePicker.SelectedDate == null)
+                return;
+
+            if (this.xTimeSpanComboBox.SelectedValue == null)
+                return;
+
+            int hour, minute, span;
+            if(int.TryParse(this.xHourTextBox.Text, out hour) == false) return;
+            if (int.TryParse(this.xMinuteTextBox.Text, out minute) == false) return;
+            if (int.TryParse(this.xSpanTextBox.Text, out span) == false) return;
+
+            DateTime dateTime = this.xDatePicker.SelectedDate.Value;
+            string timeZoneText = ((KeyValuePair<string, TimeSpan>)this.xTimeSpanComboBox.SelectedValue).Key;
+            TimeSpan timeZone = ((KeyValuePair<string, TimeSpan>)this.xTimeSpanComboBox.SelectedValue).Value;
+            TimeSpan duration = new TimeSpan(0, span, 0);
+
+            DateTimeOffset dateTimeOffset = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, hour, minute, 0, 0, timeZone);
+
+
+            //ReservationTime 作成
+            ReservationTime reservationTime = new ReservationTime();
+            reservationTime.Subject = "診察予約";
+            reservationTime.Time = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTimeOffset(dateTimeOffset);
+            reservationTime.Duration = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(duration);
+            reservationTime.TimeZone = timeZoneText;
+
+            var reply = this.grpcClient.GreeterClient.Reserve(reservationTime);
+
+            this.xReserveTextBox.Text = reply.Time.ToDateTime().ToString() + " / " + reply.TimeZone.ToString();
 
         }
     }
