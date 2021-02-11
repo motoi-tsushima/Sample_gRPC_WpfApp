@@ -128,6 +128,9 @@ namespace Sample_gRPC_WpfApp
             if (this.xTimeSpanComboBox.SelectedValue == null)
                 return;
 
+            if (this.xCountryTimeSpanComboBox.SelectedValue == null)
+                return;
+
             //時間を文字列から数値に変換する。
             int hour, minute, span;
             if(int.TryParse(this.xHourTextBox.Text, out hour) == false) return;
