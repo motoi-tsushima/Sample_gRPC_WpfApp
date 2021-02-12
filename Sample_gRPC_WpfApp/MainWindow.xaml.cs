@@ -156,7 +156,7 @@ namespace Sample_gRPC_WpfApp
 
             //ReservationTime 作成
             ReservationTime reservationTime = new ReservationTime();
-            reservationTime.Subject = "診察予約";
+            reservationTime.Subject = "打合せ予約";
             reservationTime.Time = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTimeOffset(dateTimeOffset);
             reservationTime.Duration = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(duration);
             reservationTime.TimeZone = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(timeZone);
