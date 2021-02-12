@@ -134,9 +134,21 @@ namespace Sample_gRPC_WpfApp
             //時間を文字列から数値に変換する。
             int hour, minute, span;
             if(int.TryParse(this.xHourTextBox.Text, out hour) == false) return;
-            if (hour > 24) return;
+
+            if (hour >= 24) 
+            {
+                this.xHourTextBox.Text = "×24超";
+                return; 
+            }
+
             if (int.TryParse(this.xMinuteTextBox.Text, out minute) == false) return;
-            if (minute > 60) return;
+
+            if (minute >= 60)
+            {
+                this.xMinuteTextBox.Text = "×60超";
+                return;
+            }
+
             if (int.TryParse(this.xSpanTextBox.Text, out span) == false) return;
 
             //クライアント側のタイムゾーンを設定
