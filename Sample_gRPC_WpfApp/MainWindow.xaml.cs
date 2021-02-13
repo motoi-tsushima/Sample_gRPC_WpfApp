@@ -119,6 +119,53 @@ namespace Sample_gRPC_WpfApp
             this._timeZone.Add("Jerusalem", JerusalemTimeSpan);
         }
 
+        private void ChangeTZButtonButton_Click(object sender, RoutedEventArgs e)
+        {
+            //選択していない場合は無視する。
+            if (this.xSampleDatePicker.SelectedDate == null)
+                return;
+
+            if (this.xSampleTimeSpanComboBox.SelectedValue == null)
+                return;
+
+            //時間を文字列から数値に変換する。
+            int hour, minute;
+            if (int.TryParse(this.xSampleHourTextBox.Text, out hour) == false) return;
+
+            if (hour >= 24)
+            {
+                this.xSampleHourTextBox.Text = "×24超";
+                return;
+            }
+
+            if (int.TryParse(this.xSampleMinuteTextBox.Text, out minute) == false) return;
+
+            if (minute >= 60)
+            {
+                this.xSampleMinuteTextBox.Text = "×60超";
+                return;
+            }
+
+            //タイムゾーンを設定
+            DateTime date = this.xSampleDatePicker.SelectedDate.Value;
+            TimeSpan timeZone = ((KeyValuePair<string, TimeSpan>)this.xSampleTimeSpanComboBox.SelectedValue).Value;
+
+            DateTime dateTime = new DateTime(date.Year, date.Month, date.Day, hour, minute, 0, DateTimeKind.Utc);
+
+            //ReservationTime 作成
+            ReservationTime reservationTime = new ReservationTime();
+            reservationTime.Time = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(dateTime);
+            reservationTime.TimeZone = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(timeZone);
+
+            // gRPC サービスを呼び出す。
+            var reply = this.grpcClient.GreeterClient.ChangeTimeZone(reservationTime);
+
+            // 時差日を表示する。
+            DateTime replyDateTime = reply.Time.ToDateTime();
+            TimeSpan timeSpan = reply.TimeZone.ToTimeSpan();
+            this.xChangeTextBox.Text = replyDateTime.ToString("yyyy年MM月dd日 H時m分") + " / TimeZone = " + timeSpan.ToString();
+        }
+
         private void ReserveButton_Click(object sender, RoutedEventArgs e)
         {
             //選択していない場合は無視する。
@@ -190,6 +237,7 @@ namespace Sample_gRPC_WpfApp
             this.xReserveUtcTextBox.Text = reply.Time.ToDateTimeOffset().ToString("yyyy年MM月dd日 H時m分");
 
         }
+
     }
 }
 

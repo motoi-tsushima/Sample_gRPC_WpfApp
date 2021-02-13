@@ -15,6 +15,8 @@
             <RowDefinition Height="20" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="10" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
@@ -57,7 +59,23 @@
             <TextBlock Text="割算" Width="100"  TextAlignment="Right"/>
             <TextBox x:Name="DivisionTextBox" Width="50"  TextAlignment="Right"/>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="6" Height="30" VerticalAlignment="Top"  Background="Aqua">
+        <StackPanel Orientation="Vertical" Grid.Row="6" Height="60" VerticalAlignment="Top"  Background="Peru">
+            <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Center" Background="Peru">
+                <DatePicker x:Name="xSampleDatePicker" Width="120" Height="25" />
+                <TextBox Margin="20,0,0,0" x:Name="xSampleHourTextBox" Width="50" TextAlignment="Left"/>
+                <TextBlock Text="時刻(24時間制)" Width="100" TextAlignment="Left" />
+                <TextBox x:Name="xSampleMinuteTextBox" Width="50" TextAlignment="Left"/>
+                <TextBlock Text="分" Width="30" TextAlignment="Left" />
+                <TextBlock Text="タイムゾーン" Width="60" TextAlignment="Right" />
+                <ComboBox x:Name="xSampleTimeSpanComboBox" ItemsSource="{Binding TimeZone}" Width="120" />
+                <Button x:Name="ChangeTZButton" Content="時差変更" Width="100" Margin="30,0,0,0" Click="ChangeTZButtonButton_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Bottom"  Background="Peru">
+                <TextBlock Text="時差変更日時" Width="125" TextAlignment="Left" />
+                <TextBox x:Name="xChangeTextBox" Width="450" TextAlignment="Left"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="8" Height="30" VerticalAlignment="Top"  Background="Aqua">
             <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Center" Background="Aqua">
                 <DatePicker x:Name="xDatePicker" Width="120" Height="25" />
                 <TextBox Margin="20,0,0,0" x:Name="xHourTextBox" Width="50" TextAlignment="Left"/>
@@ -73,19 +91,19 @@
                 <Button x:Name="ReserveButton" Content="予約" Width="100" Margin="30,0,0,0" Click="ReserveButton_Click"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="7" Height="30" VerticalAlignment="Top"  Background="Aqua">
+        <StackPanel Orientation="Vertical" Grid.Row="9" Height="30" VerticalAlignment="Top"  Background="Aqua">
             <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Aqua">
                 <TextBlock Text="予約候補日時" Width="125" TextAlignment="Left" />
                 <TextBox x:Name="xReserveTextBox" Width="450" TextAlignment="Left"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="8" Height="30" VerticalAlignment="Top"  Background="Aqua">
+        <StackPanel Orientation="Vertical" Grid.Row="10" Height="30" VerticalAlignment="Top"  Background="Aqua">
             <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Aqua">
                 <TextBlock Text="予約先日時" Width="125" TextAlignment="Left" />
                 <TextBox x:Name="xCountryTextBox" Width="450" TextAlignment="Left"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="9" Height="30" VerticalAlignment="Top"  Background="Aqua">
+        <StackPanel Orientation="Vertical" Grid.Row="11" Height="30" VerticalAlignment="Top"  Background="Aqua">
             <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Aqua">
                 <TextBlock Text="予約候補グリニッジ日時" Width="125" TextAlignment="Left" />
                 <TextBox x:Name="xReserveUtcTextBox" Width="450" TextAlignment="Left"/>
