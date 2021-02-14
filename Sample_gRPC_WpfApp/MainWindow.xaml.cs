@@ -226,13 +226,12 @@ namespace Sample_gRPC_WpfApp
 
             // リプライ日付をクライアント側のタイムゾーンに変換する。
             DateTimeOffset replyDateTime = reply.Time.ToDateTimeOffset().ToOffset(timeZone);
-            DateTimeOffset replyDateTimeOffset = new DateTimeOffset(replyDateTime.DateTime, timeZone);
 
             DateTimeOffset replyCountryDateTime = reply.Time.ToDateTimeOffset().ToOffset(countryTimeZone);
 
 
             // 予約日を表示する。
-            this.xReserveTextBox.Text = replyDateTimeOffset.ToString("yyyy年MM月dd日 H時m分") + " / 時間 = " + reply.Duration.ToTimeSpan().ToString() + " / TimeZone = " + reply.TimeZone.ToTimeSpan().ToString();
+            this.xReserveTextBox.Text = replyDateTime.ToString("yyyy年MM月dd日 H時m分") + " / 時間 = " + reply.Duration.ToTimeSpan().ToString() + " / TimeZone = " + reply.TimeZone.ToTimeSpan().ToString();
             this.xCountryTextBox.Text = replyCountryDateTime.DateTime.ToString("yyyy年MM月dd日 H時m分") + " / TimeZone = " + countryTimeZone.ToString();
             this.xReserveUtcTextBox.Text = reply.Time.ToDateTimeOffset().ToString("yyyy年MM月dd日 H時m分");
 
