@@ -86,37 +86,17 @@ namespace Sample_gRPC_WpfApp
 
         private void InitTimeZone()
         {
-            TimeSpan TokyoTimeSpan = new TimeSpan(9, 0, 0);
-            TimeSpan LondonTimeSpan = new TimeSpan(0, 0, 0);
-            TimeSpan New_YorkTimeSpan = new TimeSpan(-5, 0, 0);
-            TimeSpan Los_AngelesTimeSpan = new TimeSpan(-8, 0, 0);
-            TimeSpan AnchorageTimeSpan = new TimeSpan(-9, 0, 0);
-            TimeSpan SingaporeTimeSpan = new TimeSpan(8, 0, 0);
-            TimeSpan TaipeiTimeSpan = new TimeSpan(8, 0, 0);
-            TimeSpan ShanghaiTimeSpan = new TimeSpan(8, 0, 0);
-            TimeSpan SydneyTimeSpan = new TimeSpan(10, 0, 0);
-            TimeSpan YangonTimeSpan = new TimeSpan(6, 30, 0);
-            TimeSpan MoscowTimeSpan = new TimeSpan(4, 0, 0);
-            TimeSpan ParisTimeSpan = new TimeSpan(1, 0, 0);
-            TimeSpan BerlinTimeSpan = new TimeSpan(1, 0, 0);
-            TimeSpan JerusalemTimeSpan = new TimeSpan(2, 0, 0);
-
             this._timeZone = new Dictionary<string, TimeSpan>();
 
-            this._timeZone.Add("Tokyo", TokyoTimeSpan);
-            this._timeZone.Add("London", LondonTimeSpan);
-            this._timeZone.Add("New_York", New_YorkTimeSpan);
-            this._timeZone.Add("Los_Angeles", Los_AngelesTimeSpan);
-            this._timeZone.Add("Anchorage", AnchorageTimeSpan);
-            this._timeZone.Add("Singapore", SingaporeTimeSpan);
-            this._timeZone.Add("Taipei", TaipeiTimeSpan);
-            this._timeZone.Add("Shanghai", ShanghaiTimeSpan);
-            this._timeZone.Add("Sydney", SydneyTimeSpan);
-            this._timeZone.Add("Yangon", YangonTimeSpan);
-            this._timeZone.Add("Moscow", MoscowTimeSpan);
-            this._timeZone.Add("Paris", ParisTimeSpan);
-            this._timeZone.Add("Berlin", BerlinTimeSpan);
-            this._timeZone.Add("Jerusalem", JerusalemTimeSpan);
+            var sysTimeZones = TimeZoneInfo.GetSystemTimeZones();
+
+            foreach (TimeZoneInfo timeZone in sysTimeZones)
+            {
+                string timeZoneId = timeZone.Id;
+                TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                TimeSpan offset = timeZoneInfo.BaseUtcOffset;
+                this._timeZone.Add(timeZoneId, offset);
+            }
         }
 
         private void ChangeTZButtonButton_Click(object sender, RoutedEventArgs e)
