@@ -15,6 +15,9 @@ using System.Windows.Shapes;
 using Grpc.Net.Client;
 using Google.Protobuf.WellKnownTypes;
 using Sample_gRPC_ClassLibrary;
+using Microsoft.Win32;
+using System.IO;
+using Grpc.Core;
 
 namespace Sample_gRPC_WpfApp
 {
@@ -217,6 +220,42 @@ namespace Sample_gRPC_WpfApp
 
         }
 
+        /// <summary>
+        /// ファイルダウンロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void FileDownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "txt files (*.txt)|*.txt";
+
+            if (this.xDownloadFileNameTextBox.Text.Length == 0)
+            {
+                if (saveFileDialog.ShowDialog() == false)
+                    return;
+
+                this.xDownloadFileNameTextBox.Text = saveFileDialog.FileName;
+            }
+
+            FileDownloadRequest fileDownloadRequest = new FileDownloadRequest();
+            fileDownloadRequest.FileName = this.xDownloadFileNameTextBox.Text;
+
+            // gRPC サービスを呼び出す。
+            var response = this.grpcClient.GreeterClient.FileDownload(fileDownloadRequest);
+
+            using (var fs = new FileStream(fileDownloadRequest.FileName, FileMode.Create, FileAccess.Write))
+            {
+                int offset = 0;
+
+                while (await response.ResponseStream.MoveNext())
+                {
+                    var reply = response.ResponseStream.Current;
+                    byte[] bin = reply.Binary.ToByteArray();
+                    fs.Write(bin, offset, (int)reply.FileSize);
+                }
+            }
+        }
     }
 }
 
