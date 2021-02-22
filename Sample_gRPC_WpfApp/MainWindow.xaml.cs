@@ -221,40 +221,78 @@ namespace Sample_gRPC_WpfApp
         }
 
         /// <summary>
+        /// ファイルダウンロードのgRPCサービスメソッドのインスタンス
+        /// </summary>
+        private AsyncServerStreamingCall<FileDownloadStream> _responseFileDownload;
+
+        /// <summary>
         /// ファイルダウンロード
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private async void FileDownloadButton_Click(object sender, RoutedEventArgs e)
         {
+            string fileName = System.IO.Path.GetFileName(this.xDownloadFileNameTextBox.Text);
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog.FileName = fileName;
 
             if (this.xDownloadFileNameTextBox.Text.Length == 0)
             {
-                if (saveFileDialog.ShowDialog() == false)
-                    return;
-
-                this.xDownloadFileNameTextBox.Text = saveFileDialog.FileName;
+                return;
             }
+
+            if (saveFileDialog.ShowDialog() == false)
+                return;
+
+            this.FileDownloadButton.IsEnabled = false;
+            this.CancelButton.IsEnabled = true;
+            this.xDownloadMessage.Text = fileName + " ダウンロード中";
 
             FileDownloadRequest fileDownloadRequest = new FileDownloadRequest();
             fileDownloadRequest.FileName = this.xDownloadFileNameTextBox.Text;
 
             // gRPC サービスを呼び出す。
-            var response = this.grpcClient.GreeterClient.FileDownload(fileDownloadRequest);
+            //var response = this.grpcClient.GreeterClient.FileDownload(fileDownloadRequest);
+            this._responseFileDownload = this.grpcClient.GreeterClient.FileDownload(fileDownloadRequest);
 
-            using (var fs = new FileStream(fileDownloadRequest.FileName, FileMode.Create, FileAccess.Write))
+            try
             {
-                int offset = 0;
-
-                while (await response.ResponseStream.MoveNext())
+                using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write))
                 {
-                    var reply = response.ResponseStream.Current;
-                    byte[] bin = reply.Binary.ToByteArray();
-                    fs.Write(bin, offset, (int)reply.FileSize);
+                    int offset = 0;
+
+                    while (await this._responseFileDownload?.ResponseStream.MoveNext())
+                    {
+                        var reply = this._responseFileDownload.ResponseStream.Current;
+                        byte[] bin = reply.Binary.ToByteArray();
+                        fs.Write(bin, offset, (int)reply.FileSize);
+                    }
                 }
+
+                this.xDownloadMessage.Text = "";
             }
+            catch (RpcException rpcEx) when (rpcEx.StatusCode == StatusCode.Cancelled)
+            {
+                this.xDownloadMessage.Text = "ダウンロードをキャンセルしました。";
+            }
+
+            this.FileDownloadButton.IsEnabled = true;
+            this.CancelButton.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// ファイルダウンロードのキャンセル
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this._responseFileDownload == null)
+                return;
+
+            this._responseFileDownload.Dispose();
         }
     }
 }
