@@ -21,6 +21,7 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" >
@@ -117,6 +118,13 @@
                 <Button x:Name="FileDownloadButton" Content="ダウンロード" Width="100" Margin="30,0,0,0" VerticalAlignment="Center" Click="FileDownloadButton_Click"/>
                 <Button x:Name="CancelButton" Content="キャンセル" Width="100" Margin="30,0,0,0" Click="CancelButton_Click" IsEnabled="False" VerticalAlignment="Center"/>
                 <TextBlock x:Name="xDownloadMessage" Text="" Width="250" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="13" Height="30" VerticalAlignment="Top"  Background="Silver">
+            <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Silver">
+                <Button x:Name="FileUploadButton" Content="ファイル アップロード" Width="100" Margin="30,0,0,0" VerticalAlignment="Center" Click="FileUploadButton_Click"/>
+                <Button x:Name="CancelUploadButton" Content="キャンセル" Width="100" Margin="30,0,0,0" Click="CancelUploadButton_Click" IsEnabled="False" VerticalAlignment="Center"/>
+                <TextBlock x:Name="xUploadMessage" Text="" Width="550" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
 

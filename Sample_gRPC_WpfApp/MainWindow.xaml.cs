@@ -294,6 +294,101 @@ namespace Sample_gRPC_WpfApp
 
             this._responseFileDownload.Dispose();
         }
+
+        /// <summary>
+        /// ファイルアップロードのgRPCサービスメソッドのインスタンス
+        /// </summary>
+        //private AsyncClientStreamingCall<FileUploadStream, FileUploadResponse> _callFileUpload;
+
+        /// <summary>
+        /// キャンセルした
+        /// </summary>
+        private bool _uploadCanceled = false;
+
+        /// <summary>
+        /// ファイルアップロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void FileUploadButton_Click(object sender, RoutedEventArgs e)
+        {
+            AsyncClientStreamingCall<FileUploadStream, FileUploadResponse> _callFileUpload;
+            string filePath;
+            string fileName;
+            const int BufferSize = 10240;
+            byte[] bin = new byte[BufferSize];
+
+            this._uploadCanceled = false;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            var dlg = openFileDialog.ShowDialog();
+            if(dlg == false)
+            {
+                return;
+            }
+
+            filePath = openFileDialog.FileName;
+            fileName = System.IO.Path.GetFileName(filePath);
+
+            this.FileUploadButton.IsEnabled = false;
+            this.CancelUploadButton.IsEnabled = true;
+            this.xUploadMessage.Text = fileName + " アップロード中";
+
+            // gRPC メッセージ 宣言
+            FileUploadStream fileUploadStream = new FileUploadStream();
+            fileUploadStream.FileName = fileName;
+            fileUploadStream.FileSize = BufferSize;
+
+            // gRPC サービスを呼び出す。
+            _callFileUpload = this.grpcClient.GreeterClient.FileUpload();
+
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                int sendSize = 0;
+                int readSize = 0;
+
+                while((readSize = fs.Read(bin, 0, BufferSize)) > 0)
+                {
+                    if (this._uploadCanceled)
+                    {
+                        break;
+                    }
+
+                    fileUploadStream.Binary = Google.Protobuf.ByteString.CopyFrom(bin);
+
+                    await _callFileUpload.RequestStream.WriteAsync(fileUploadStream);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+
+                    this.xUploadMessage.Text = fileName + " アップロード中 / Send Byte=" + (sendSize += readSize);
+                }
+
+                await _callFileUpload.RequestStream.CompleteAsync();
+
+            }
+
+            this.FileUploadButton.IsEnabled = true;
+            this.CancelUploadButton.IsEnabled = false;
+
+            if (this._uploadCanceled)
+            {
+                this.xUploadMessage.Text = "キャンセルしました";
+            }
+            else
+            {
+                this.xUploadMessage.Text = "Result = " + _callFileUpload.ResponseAsync.Result.Result.ToString();
+            }
+        }
+
+        /// <summary>
+        /// ファイルアップロードのキャンセル
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CancelUploadButton_Click(object sender, RoutedEventArgs e)
+        {
+            this._uploadCanceled = true;
+        }
     }
 }
 
