@@ -389,6 +389,166 @@ namespace Sample_gRPC_WpfApp
         {
             this._uploadCanceled = true;
         }
+
+        /// <summary>
+        /// 双方向ストリーミング実行
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void BidiUploadButton_Click(object sender, RoutedEventArgs e)
+        {
+            AsyncDuplexStreamingCall<BidirectionalStreamRequest, BidirectionalStreamResponse> _callBidiStream;
+            string filePath;
+            string fileName;
+            const int BufferSize = 10240;
+            byte[] bin = new byte[BufferSize];
+
+            this._bidiCanceled = false;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            var dlg = openFileDialog.ShowDialog();
+            if (dlg == false)
+            {
+                return;
+            }
+
+            filePath = openFileDialog.FileName;
+            fileName = System.IO.Path.GetFileName(filePath);
+
+            this.BidiUploadButton.IsEnabled = false;
+            this.CancelBidiButton.IsEnabled = true;
+            this.BidiDownloadButton.IsEnabled = false;
+            this.BidiMessage.Text = fileName + " アップロード中";
+
+            // gRPC メッセージ 宣言
+            BidirectionalStreamRequest bidiRequest = new BidirectionalStreamRequest();
+            bidiRequest.Request = "normal";
+            bidiRequest.BinarySize = BufferSize;
+
+            // gRPC サービスを呼び出す。
+            _callBidiStream = this.grpcClient.GreeterClient.BidirectionalStream();
+
+            // 非同期レスポンス受信とファイル出力
+            string writeFileName = this.BidiDownloadTextBox.Text;
+            string responseMessage = "";
+
+            var readTask = Task.Run(async () =>
+            {
+                FileStream wfs = null;
+
+                try
+                {
+                    await foreach (var message in _callBidiStream.ResponseStream.ReadAllAsync())
+                    {
+                        if (this._bidiCanceled)
+                        {
+                            break;
+                        }
+
+                        if (wfs == null)
+                        {
+                            wfs = new FileStream(writeFileName, FileMode.Create, FileAccess.Write);
+                        }
+
+                        byte[] wbin = message.Binary.ToByteArray();
+
+                        wfs.Write(wbin, 0, (int)message.BinarySize);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    responseMessage = ex.Message;
+                }
+                finally
+                {
+                    if (wfs != null)
+                    {
+                        wfs.Close();
+                        wfs.Dispose();
+                    }
+                }
+            });
+
+            //ファイルアップロードと非同期リクエストストリーム
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                int sendSize = 0;
+                int readSize = 0;
+
+                while ((readSize = fs.Read(bin, 0, BufferSize)) > 0)
+                {
+                    if (this._bidiCanceled || readTask.IsCompleted || readTask.IsCanceled)
+                    {
+                        break;
+                    }
+
+                    bidiRequest.Binary = Google.Protobuf.ByteString.CopyFrom(bin);
+
+                    await _callBidiStream.RequestStream.WriteAsync(bidiRequest);
+                    await Task.Delay(TimeSpan.FromMilliseconds(10));
+
+                    this.BidiMessage.Text = fileName + " 双方向ストリーミング中 / Send Byte=" + (sendSize += readSize);
+                }
+
+                await _callBidiStream.RequestStream.CompleteAsync();
+            }
+
+            //後始末
+            _callBidiStream.Dispose();
+
+            this.BidiUploadButton.IsEnabled = true;
+            this.CancelBidiButton.IsEnabled = false;
+            this.BidiDownloadButton.IsEnabled = true;
+
+            if (this._bidiCanceled)
+            {
+                this.BidiMessage.Text = "キャンセルしました";
+                this.BidiDownloadMessage.Text = "";
+            }
+            else
+            {
+                this.BidiMessage.Text = "ストリーミング完了";
+                this.BidiDownloadMessage.Text = responseMessage;
+            }
+        }
+
+        /// <summary>
+        /// 双方向ストリーミングのダウンロードファイル名設定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BidiDownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.FileName = this.BidiDownloadTextBox.Text;
+
+            if (this.BidiDownloadTextBox.Text.Length == 0)
+            {
+                return;
+            }
+
+            if (saveFileDialog.ShowDialog() == false)
+                return;
+
+            this.BidiDownloadTextBox.Text = saveFileDialog.FileName;
+
+        }
+
+        /// <summary>
+        /// キャンセルした
+        /// </summary>
+        private bool _bidiCanceled = false;
+
+        /// <summary>
+        /// 双方向ストリーミング中断
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CancelBidiButton_Click(object sender, RoutedEventArgs e)
+        {
+            this._bidiCanceled = true;
+        }
     }
 }
 

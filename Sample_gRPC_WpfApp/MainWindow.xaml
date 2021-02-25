@@ -22,6 +22,7 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" >
@@ -125,6 +126,20 @@
                 <Button x:Name="FileUploadButton" Content="ファイル アップロード" Width="100" Margin="30,0,0,0" VerticalAlignment="Center" Click="FileUploadButton_Click"/>
                 <Button x:Name="CancelUploadButton" Content="キャンセル" Width="100" Margin="30,0,0,0" Click="CancelUploadButton_Click" IsEnabled="False" VerticalAlignment="Center"/>
                 <TextBlock x:Name="xUploadMessage" Text="" Width="550" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="14" Height="50" VerticalAlignment="Top"  Background="Violet">
+            <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Violet">
+                <TextBlock Text="双方向ストリーミング" Width="170" TextAlignment="Left" VerticalAlignment="Top" Margin="10,0,20,0" FontSize="18" />
+                <Button x:Name="BidiUploadButton" Content="ファイル アップロード" Width="100" Margin="30,0,0,0" VerticalAlignment="Center" Click="BidiUploadButton_Click"/>
+                <Button x:Name="CancelBidiButton" Content="キャンセル" Width="100" Margin="30,0,0,0" Click="CancelBidiButton_Click" IsEnabled="False" VerticalAlignment="Center"/>
+                <TextBlock x:Name="BidiMessage" Text="" Width="550" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top"  Background="Violet">
+                <TextBlock Margin="30,0,0,0" Text="ダウンロードファイル名" Width="125" TextAlignment="Left" VerticalAlignment="Center" />
+                <TextBox x:Name="BidiDownloadTextBox" Width="300" TextAlignment="Left" Text="download.bin" VerticalAlignment="Center" />
+                <Button x:Name="BidiDownloadButton" Content="ダウンロードファイル名設定" Width="150" Margin="30,0,0,0" VerticalAlignment="Center" Click="BidiDownloadButton_Click"/>
+                <TextBlock x:Name="BidiDownloadMessage" Text="" Width="550" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
 
